@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CS - Timetable</title>
+  <title>CS - Timetable</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .user-section {
+      margin-bottom: 50px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    input, select, button {
+      margin: 5px;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CS - Department</h1>
+
+  <!-- Person A -->
+  <div class="user-section" id="userA">
+    <h2>Dr.A.Kutralam - Timetable</h2>
+    <div>
+      <label>Row:
+        <select id="rowA">
+          <option value="0">1</option>
+          <option value="1">2</option>
+          <option value="2">3</option>
+          <option value="3">4</option>
+          <option value="4">5</option>
+        </select>
+      </label>
+      <label>D1: <input type="text" id="d1A"></label>
+      <label>D2: <input type="text" id="d2A"></label>
+      <label>D3: <input type="text" id="d3A"></label>
+      <label>D4: <input type="text" id="d4A"></label>
+      <label>D5: <input type="text" id="d5A"></label>
+      <label>D6: <input type="text" id="d6A"></label>
+      <button onclick="addOrUpdate('A')">Add/Update</button>
+    </div>
+    <table id="timetableA">
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th>D1</th>
+          <th>D2</th>
+          <th>D3</th>
+          <th>D4</th>
+          <th>D5</th>
+          <th>D6</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Person B -->
+  <div class="user-section" id="userB">
+    <h2>Dr.V.Vani - Timetable</h2>
+    <div>
+      <label>Row:
+        <select id="rowB">
+          <option value="0">1</option>
+          <option value="1">2</option>
+          <option value="2">3</option>
+          <option value="3">4</option>
+          <option value="4">5</option>
+        </select>
+      </label>
+      <label>D1: <input type="text" id="d1B"></label>
+      <label>D2: <input type="text" id="d2B"></label>
+      <label>D3: <input type="text" id="d3B"></label>
+      <label>D4: <input type="text" id="d4B"></label>
+      <label>D5: <input type="text" id="d5B"></label>
+      <label>D6: <input type="text" id="d6B"></label>
+      <button onclick="addOrUpdate('B')">Add/Update</button>
+    </div>
+    <table id="timetableB">
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th>D1</th>
+          <th>D2</th>
+          <th>D3</th>
+          <th>D4</th>
+          <th>D5</th>
+          <th>D6</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function initTables() {
+      ['A', 'B'].forEach(user => {
+        const tbody = document.getElementById('timetable' + user).querySelector('tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+        for (let i = 1; i <= 5; i++) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <th>${i}</th>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td><span></span></td>
+            <td>
+              <button onclick="editRow(this, '${user}')">Edit</button>
+              <button onclick="deleteRow(this, '${user}')">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        }
+        loadFromStorage(user);
+      });
+    }
+
+    function addOrUpdate(user) {
+      const rowIndex = parseInt(document.getElementById("row" + user).value);
+      const values = [];
+      for (let i = 1; i <= 6; i++) {
+        values.push(document.getElementById("d" + i + user).value);
+      }
+
+      const row = document.getElementById("timetable" + user).rows[rowIndex + 1]; // +1 for header
+      for (let i = 1; i <= 6; i++) {
+        row.cells[i].querySelector("span").textContent = values[i - 1];
+      }
+
+      saveToStorage(user);
+
+      // Clear input fields
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById("d" + i + user).value = '';
+      }
+    }
+
+    function editRow(button, user) {
+      const row = button.parentElement.parentElement;
+      const rowIndex = row.rowIndex - 1;
+      document.getElementById("row" + user).value = rowIndex;
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById("d" + i + user).value = row.cells[i].querySelector("span").textContent;
+      }
+    }
+
+    function deleteRow(button, user) {
+      const row = button.parentElement.parentElement;
+      for (let i = 1; i <= 6; i++) {
+        row.cells[i].querySelector("span").textContent = '';
+      }
+      saveToStorage(user);
+    }
+
+    function saveToStorage(user) {
+      const rows = document.querySelectorAll("#timetable" + user + " tbody tr");
+      const data = [];
+      rows.forEach(row => {
+        const rowData = [];
+        for (let i = 1; i <= 6; i++) {
+          rowData.push(row.cells[i].querySelector("span").textContent);
+        }
+        data.push(rowData);
+      });
+      localStorage.setItem("timetable" + user, JSON.stringify(data));
+    }
+
+    function loadFromStorage(user) {
+      const data = JSON.parse(localStorage.getItem("timetable" + user) || "[]");
+      const rows = document.querySelectorAll("#timetable" + user + " tbody tr");
+      data.forEach((rowData, rowIndex) => {
+        if (rows[rowIndex]) {
+          for (let i = 0; i < 6; i++) {
+            rows[rowIndex].cells[i + 1].querySelector("span").textContent = rowData[i] || '';
+          }
+        }
+      });
+    }
+
+    initTables();
+  </script>
+
+</body>
+</html>
