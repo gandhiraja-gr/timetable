@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>CS - Timetable</title>
-  <title>CS - Timetable</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,33 +36,32 @@
   <div class="user-section" id="userA">
     <h2>Dr.A.Kutralam - Timetable</h2>
     <div>
-      <label>Row:
-        <select id="rowA">
-          <option value="0">1</option>
-          <option value="1">2</option>
-          <option value="2">3</option>
-          <option value="3">4</option>
-          <option value="4">5</option>
+      <label>Day:
+        <select id="dayA">
+          <option value="0">D1</option>
+          <option value="1">D2</option>
+          <option value="2">D3</option>
+          <option value="3">D4</option>
+          <option value="4">D5</option>
+          <option value="5">D6</option>
         </select>
       </label>
-      <label>D1: <input type="text" id="d1A"></label>
-      <label>D2: <input type="text" id="d2A"></label>
-      <label>D3: <input type="text" id="d3A"></label>
-      <label>D4: <input type="text" id="d4A"></label>
-      <label>D5: <input type="text" id="d5A"></label>
-      <label>D6: <input type="text" id="d6A"></label>
+      <label>1: <input type="text" id="r1A"></label>
+      <label>2: <input type="text" id="r2A"></label>
+      <label>3: <input type="text" id="r3A"></label>
+      <label>4: <input type="text" id="r4A"></label>
+      <label>5: <input type="text" id="r5A"></label>
       <button onclick="addOrUpdate('A')">Add/Update</button>
     </div>
     <table id="timetableA">
       <thead>
         <tr>
-          <th>Row</th>
-          <th>D1</th>
-          <th>D2</th>
-          <th>D3</th>
-          <th>D4</th>
-          <th>D5</th>
-          <th>D6</th>
+          <th>Day</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -75,33 +73,32 @@
   <div class="user-section" id="userB">
     <h2>Dr.V.Vani - Timetable</h2>
     <div>
-      <label>Row:
-        <select id="rowB">
-          <option value="0">1</option>
-          <option value="1">2</option>
-          <option value="2">3</option>
-          <option value="3">4</option>
-          <option value="4">5</option>
+      <label>Day:
+        <select id="dayB">
+          <option value="0">D1</option>
+          <option value="1">D2</option>
+          <option value="2">D3</option>
+          <option value="3">D4</option>
+          <option value="4">D5</option>
+          <option value="5">D6</option>
         </select>
       </label>
-      <label>D1: <input type="text" id="d1B"></label>
-      <label>D2: <input type="text" id="d2B"></label>
-      <label>D3: <input type="text" id="d3B"></label>
-      <label>D4: <input type="text" id="d4B"></label>
-      <label>D5: <input type="text" id="d5B"></label>
-      <label>D6: <input type="text" id="d6B"></label>
+      <label>1: <input type="text" id="r1B"></label>
+      <label>2: <input type="text" id="r2B"></label>
+      <label>3: <input type="text" id="r3B"></label>
+      <label>4: <input type="text" id="r4B"></label>
+      <label>5: <input type="text" id="r5B"></label>
       <button onclick="addOrUpdate('B')">Add/Update</button>
     </div>
     <table id="timetableB">
       <thead>
         <tr>
-          <th>Row</th>
-          <th>D1</th>
-          <th>D2</th>
-          <th>D3</th>
-          <th>D4</th>
-          <th>D5</th>
-          <th>D6</th>
+          <th>Day</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -113,12 +110,11 @@
     function initTables() {
       ['A', 'B'].forEach(user => {
         const tbody = document.getElementById('timetable' + user).querySelector('tbody');
-        tbody.innerHTML = ''; // Clear existing rows
-        for (let i = 1; i <= 5; i++) {
+        tbody.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <th>${i}</th>
-            <td><span></span></td>
+            <th>D${i + 1}</th>
             <td><span></span></td>
             <td><span></span></td>
             <td><span></span></td>
@@ -136,37 +132,37 @@
     }
 
     function addOrUpdate(user) {
-      const rowIndex = parseInt(document.getElementById("row" + user).value);
+      const dayIndex = parseInt(document.getElementById("day" + user).value);
       const values = [];
-      for (let i = 1; i <= 6; i++) {
-        values.push(document.getElementById("d" + i + user).value);
+      for (let i = 1; i <= 5; i++) {
+        values.push(document.getElementById("r" + i + user).value);
       }
 
-      const row = document.getElementById("timetable" + user).rows[rowIndex + 1]; // +1 for header
-      for (let i = 1; i <= 6; i++) {
-        row.cells[i].querySelector("span").textContent = values[i - 1];
+      const row = document.getElementById("timetable" + user).rows[dayIndex + 1]; // +1 for header
+      for (let i = 0; i < 5; i++) {
+        row.cells[i + 1].querySelector("span").textContent = values[i];
       }
 
       saveToStorage(user);
 
-      // Clear input fields
-      for (let i = 1; i <= 6; i++) {
-        document.getElementById("d" + i + user).value = '';
+      // Clear input
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById("r" + i + user).value = '';
       }
     }
 
     function editRow(button, user) {
       const row = button.parentElement.parentElement;
-      const rowIndex = row.rowIndex - 1;
-      document.getElementById("row" + user).value = rowIndex;
-      for (let i = 1; i <= 6; i++) {
-        document.getElementById("d" + i + user).value = row.cells[i].querySelector("span").textContent;
+      const dayIndex = row.rowIndex - 1;
+      document.getElementById("day" + user).value = dayIndex;
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById("r" + i + user).value = row.cells[i].querySelector("span").textContent;
       }
     }
 
     function deleteRow(button, user) {
       const row = button.parentElement.parentElement;
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 5; i++) {
         row.cells[i].querySelector("span").textContent = '';
       }
       saveToStorage(user);
@@ -177,7 +173,7 @@
       const data = [];
       rows.forEach(row => {
         const rowData = [];
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 5; i++) {
           rowData.push(row.cells[i].querySelector("span").textContent);
         }
         data.push(rowData);
@@ -190,7 +186,7 @@
       const rows = document.querySelectorAll("#timetable" + user + " tbody tr");
       data.forEach((rowData, rowIndex) => {
         if (rows[rowIndex]) {
-          for (let i = 0; i < 6; i++) {
+          for (let i = 0; i < 5; i++) {
             rows[rowIndex].cells[i + 1].querySelector("span").textContent = rowData[i] || '';
           }
         }
