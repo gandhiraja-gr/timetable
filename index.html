@@ -1,242 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>CS - Timetable</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<title>Timetable Vertical Days</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    h1, h2 {
-      text-align: center;
-    }
-
-    .user-section {
-      margin-bottom: 50px;
-    }
-
-    .form-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    .form-container label {
-      display: flex;
-      flex-direction: column;
-      min-width: 70px;
-    }
-
-    input, select, button {
-      padding: 6px;
-      font-size: 16px;
-    }
-
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 600px;
-    }
-
-    table, th, td {
-      border: 1px solid #aaa;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: center;
-    }
-
-    button {
-      cursor: pointer;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    @media (max-width: 600px) {
-      input, select, button {
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      .form-container {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      table {
-        font-size: 14px;
-      }
-    }
-    footer .copyright {
-  text-align: center;
-  padding-top: 20px;
-  width: 100%;
-  border-top: 1px solid #555;
+<style>
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    margin-bottom: 70px; /* space for footer */
 }
-  </style>
+h2 {
+    text-align: center;
+}
+form {
+    text-align: center;
+    margin-bottom: 20px;
+}
+select, input, button {
+    padding: 8px;
+    margin: 5px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+th, td {
+    border: 1px solid #000;
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background-color: #f2f2f2;
+}
+td.selectable {
+    cursor: pointer;
+}
+td.selectable:hover {
+    background-color: #e6f2ff;
+}
+.action-btn {
+    padding: 5px 10px;
+    margin: 2px;
+}
+
+/* Footer style */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+}
+</style>
 </head>
 <body>
 
-  <h1>CS - Department</h1>
+<h2>Timetable Entry</h2>
 
-  <!-- Person A -->
-  <div class="user-section" id="userA">
-    <h2>Timetable</h2>
-    <div class="form-container">
-      <label>Day:
-        <select id="dayA">
-          <option value="0">D1</option>
-          <option value="1">D2</option>
-          <option value="2">D3</option>
-          <option value="3">D4</option>
-          <option value="4">D5</option>
-          <option value="5">D6</option>
-        </select>
-      </label>
-      <label>1: <input type="text" id="r1A"></label>
-      <label>2: <input type="text" id="r2A"></label>
-      <label>3: <input type="text" id="r3A"></label>
-      <label>4: <input type="text" id="r4A"></label>
-      <label>5: <input type="text" id="r5A"></label>
-      <button onclick="addOrUpdate('A')">Add/Update</button>
-    </div>
-    <div class="table-container">
-      <table id="timetableA">
-        <thead>
-          <tr>
-            <th style="width:10%">Day</th>
+<form id="timetableForm">
+    <select id="day" required>
+        <option value="">Select Day</option>
+        <option>D1</option>
+        <option>D2</option>
+        <option>D3</option>
+        <option>D4</option>
+        <option>D5</option>
+    </select>
+
+    <select id="hour" required>
+        <option value="">Select Hour</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+    </select>
+
+    <input type="text" id="subject" placeholder="Subject" required>
+    <button type="submit">Add / Update</button>
+</form>
+
+<h2>Timetable View</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Day ↓ / Hour →</th>
             <th>1</th>
             <th>2</th>
             <th>3</th>
             <th>4</th>
             <th>5</th>
-            <th style="width:15%">Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="timetableBody"></tbody>
+</table>
 
+<!-- Footer -->
+<footer>
+    © 2025 | Timetable Management System | Designed by Gandhiraja✨
+</footer>
 
-  <footer>
-  <p class="copyright">
-    &copy; <span id="year"></span> Gandhiraja | All Rights Reserved
-  </p>
-  </footer>
+<script>
+let timetable = JSON.parse(localStorage.getItem("gridTimetable")) || {};
+let selectedKey = null;
 
+function renderTable() {
+    const body = document.getElementById("timetableBody");
+    body.innerHTML = "";
 
+    for (let day = 1; day <= 5; day++) {
+        let row = `<tr><th>D${day}</th>`;
 
+        for (let hour = 1; hour <= 5; hour++) {
+            const key = `D${day}_H${hour}`;
+            row += `<td class="selectable" onclick="selectCell('${key}')">
+                        ${timetable[key] || ""}
+                    </td>`;
+        }
 
-  <script>
-    function initTables() {
-      ['A', 'B'].forEach(user => {
-        const tbody = document.getElementById('timetable' + user).querySelector('tbody');
-        tbody.innerHTML = '';
-        for (let i = 0; i < 6; i++) {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <th>D${i + 1}</th>
-            <td><span></span></td>
-            <td><span></span></td>
-            <td><span></span></td>
-            <td><span></span></td>
-            <td><span></span></td>
+        row += `
             <td>
-              <button onclick="editRow(this, '${user}')">
-  <i class="fas fa-edit"></i>
-</button>
-
-              <button onclick="deleteRow(this, '${user}')"><i class="fas fa-trash"></i></button>
+                <button class="action-btn" onclick="editCell()">Edit</button>
+                <button class="action-btn" onclick="deleteCell()">Delete</button>
             </td>
-          `;
-          tbody.appendChild(row);
-        }
-        loadFromStorage(user);
-      });
+        </tr>`;
+
+        body.innerHTML += row;
     }
+}
 
-    function addOrUpdate(user) {
-      const dayIndex = parseInt(document.getElementById("day" + user).value);
-      const values = [];
-      for (let i = 1; i <= 5; i++) {
-        values.push(document.getElementById("r" + i + user).value);
-      }
+function selectCell(key) {
+    selectedKey = key;
+    const [day, hour] = key.split("_");
+    document.getElementById("day").value = day;
+    document.getElementById("hour").value = hour.replace("H", "");
+    document.getElementById("subject").value = timetable[key] || "";
+}
 
-      const row = document.getElementById("timetable" + user).rows[dayIndex + 1]; // +1 for header
-      for (let i = 0; i < 5; i++) {
-        row.cells[i + 1].querySelector("span").textContent = values[i];
-      }
+document.getElementById("timetableForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-      saveToStorage(user);
+    const day = document.getElementById("day").value;
+    const hour = document.getElementById("hour").value;
+    const subject = document.getElementById("subject").value;
 
-      for (let i = 1; i <= 5; i++) {
-        document.getElementById("r" + i + user).value = '';
-      }
+    const key = `${day}_H${hour}`;
+    timetable[key] = subject;
+
+    localStorage.setItem("gridTimetable", JSON.stringify(timetable));
+    this.reset();
+    selectedKey = null;
+    renderTable();
+});
+
+function editCell() {
+    if (!selectedKey) {
+        alert("Select a cell first");
+        return;
     }
-
-    function editRow(button, user) {
-      const row = button.parentElement.parentElement;
-      const dayIndex = row.rowIndex - 1;
-      document.getElementById("day" + user).value = dayIndex;
-      for (let i = 1; i <= 5; i++) {
-        document.getElementById("r" + i + user).value = row.cells[i].querySelector("span").textContent;
-      }
+    const newValue = prompt("Edit Subject", timetable[selectedKey]);
+    if (newValue) {
+        timetable[selectedKey] = newValue;
+        localStorage.setItem("gridTimetable", JSON.stringify(timetable));
+        renderTable();
     }
+}
 
-    function deleteRow(button, user) {
-      const row = button.parentElement.parentElement;
-      for (let i = 1; i <= 5; i++) {
-        row.cells[i].querySelector("span").textContent = '';
-      }
-      saveToStorage(user);
+function deleteCell() {
+    if (!selectedKey) {
+        alert("Select a cell first");
+        return;
     }
-
-    function saveToStorage(user) {
-      const rows = document.querySelectorAll("#timetable" + user + " tbody tr");
-      const data = [];
-      rows.forEach(row => {
-        const rowData = [];
-        for (let i = 1; i <= 5; i++) {
-          rowData.push(row.cells[i].querySelector("span").textContent);
-        }
-        data.push(rowData);
-      });
-      localStorage.setItem("timetable" + user, JSON.stringify(data));
+    if (confirm("Delete this subject?")) {
+        delete timetable[selectedKey];
+        localStorage.setItem("gridTimetable", JSON.stringify(timetable));
+        selectedKey = null;
+        renderTable();
     }
+}
 
-    function loadFromStorage(user) {
-      const data = JSON.parse(localStorage.getItem("timetable" + user) || "[]");
-      const rows = document.querySelectorAll("#timetable" + user + " tbody tr");
-      data.forEach((rowData, rowIndex) => {
-        if (rows[rowIndex]) {
-          for (let i = 0; i < 5; i++) {
-            rows[rowIndex].cells[i + 1].querySelector("span").textContent = rowData[i] || '';
-          }
-        }
-      });
-    }
-
-    initTables();
-    document.getElementById("year").innerHTML = new Date().getFullYear();
-  </script>
+renderTable();
+</script>
 
 </body>
 </html>
