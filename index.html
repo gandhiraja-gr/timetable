@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Timetable Vertical Days</title>
+<title>Timetable Vertical Days (D1–D6)</title>
 
 <style>
 body {
     font-family: Arial, sans-serif;
     padding: 20px;
-    margin-bottom: 70px; /* space for footer */
+    margin-bottom: 70px;
 }
 h2 {
     text-align: center;
@@ -44,13 +44,13 @@ td.selectable:hover {
     margin: 2px;
 }
 
-/* Footer style */
+/* Footer */
 footer {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #333;
+    background: #333;
     color: #fff;
     text-align: center;
     padding: 10px 0;
@@ -70,6 +70,7 @@ footer {
         <option>D3</option>
         <option>D4</option>
         <option>D5</option>
+        <option>D6</option>
     </select>
 
     <select id="hour" required>
@@ -102,7 +103,6 @@ footer {
     <tbody id="timetableBody"></tbody>
 </table>
 
-<!-- Footer -->
 <footer>
     © 2025 | Timetable Management System | Designed by Gandhiraja✨
 </footer>
@@ -115,7 +115,7 @@ function renderTable() {
     const body = document.getElementById("timetableBody");
     body.innerHTML = "";
 
-    for (let day = 1; day <= 5; day++) {
+    for (let day = 1; day <= 6; day++) {
         let row = `<tr><th>D${day}</th>`;
 
         for (let hour = 1; hour <= 5; hour++) {
