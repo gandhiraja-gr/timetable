@@ -2,32 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Timetable Vertical Days (D1–D6)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timetable Mobile Friendly</title>
 
 <style>
 body {
     font-family: Arial, sans-serif;
-    padding: 20px;
-    margin-bottom: 70px;
+    padding: 15px;
+    margin-bottom: 80px;
 }
 h2 {
     text-align: center;
 }
+
+/* Form */
 form {
-    text-align: center;
-    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
 }
 select, input, button {
-    padding: 8px;
-    margin: 5px;
+    padding: 10px;
+    font-size: 14px;
 }
+
+/* Table wrapper for mobile scroll */
+.table-container {
+    overflow-x: auto;
+}
+
+/* Table */
 table {
     border-collapse: collapse;
     width: 100%;
+    min-width: 650px; /* important for mobile scroll */
 }
 th, td {
     border: 1px solid #000;
-    padding: 10px;
+    padding: 8px;
     text-align: center;
 }
 th {
@@ -39,9 +53,12 @@ td.selectable {
 td.selectable:hover {
     background-color: #e6f2ff;
 }
+
+/* Buttons */
 .action-btn {
-    padding: 5px 10px;
+    padding: 6px 10px;
     margin: 2px;
+    font-size: 13px;
 }
 
 /* Footer */
@@ -53,8 +70,23 @@ footer {
     background: #333;
     color: #fff;
     text-align: center;
-    padding: 10px 0;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 13px;
+}
+
+/* Mobile specific */
+@media (max-width: 600px) {
+    form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    select, input, button {
+        width: 100%;
+    }
+    .action-btn {
+        width: 100%;
+        margin: 3px 0;
+    }
 }
 </style>
 </head>
@@ -88,6 +120,7 @@ footer {
 
 <h2>Timetable View</h2>
 
+<div class="table-container">
 <table>
     <thead>
         <tr>
@@ -102,9 +135,10 @@ footer {
     </thead>
     <tbody id="timetableBody"></tbody>
 </table>
+</div>
 
 <footer>
-    © 2025 | Timetable Management System | Designed by Gandhiraja✨
+    © 2025 | Timetable Management System
 </footer>
 
 <script>
@@ -146,14 +180,11 @@ function selectCell(key) {
 
 document.getElementById("timetableForm").addEventListener("submit", function(e) {
     e.preventDefault();
-
-    const day = document.getElementById("day").value;
-    const hour = document.getElementById("hour").value;
+    const day = day.value;
+    const hour = hour.value;
     const subject = document.getElementById("subject").value;
 
-    const key = `${day}_H${hour}`;
-    timetable[key] = subject;
-
+    timetable[`${day}_H${hour}`] = subject;
     localStorage.setItem("gridTimetable", JSON.stringify(timetable));
     this.reset();
     selectedKey = null;
@@ -161,23 +192,17 @@ document.getElementById("timetableForm").addEventListener("submit", function(e) 
 });
 
 function editCell() {
-    if (!selectedKey) {
-        alert("Select a cell first");
-        return;
-    }
-    const newValue = prompt("Edit Subject", timetable[selectedKey]);
-    if (newValue) {
-        timetable[selectedKey] = newValue;
+    if (!selectedKey) return alert("Select a cell first");
+    const v = prompt("Edit Subject", timetable[selectedKey]);
+    if (v) {
+        timetable[selectedKey] = v;
         localStorage.setItem("gridTimetable", JSON.stringify(timetable));
         renderTable();
     }
 }
 
 function deleteCell() {
-    if (!selectedKey) {
-        alert("Select a cell first");
-        return;
-    }
+    if (!selectedKey) return alert("Select a cell first");
     if (confirm("Delete this subject?")) {
         delete timetable[selectedKey];
         localStorage.setItem("gridTimetable", JSON.stringify(timetable));
